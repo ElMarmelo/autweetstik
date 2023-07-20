@@ -1,7 +1,7 @@
 "use client";
 import clsx from "clsx";
-import { forwardRef } from "react";
-import { VariantProps, cva } from "class-variance-authority";
+import React, { forwardRef } from "react";
+import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 
 
@@ -11,7 +11,7 @@ const variants = cva([
     'cursor-pointer',
     'inline-flex',
     'items-center',
-    'justify-center',
+    'text-center',
     'relative',
     'transition',
     'outline-none',
@@ -23,55 +23,123 @@ const variants = cva([
             primary: [
                 'bg-au-primary-500',
                 'text-au-gray-100',
-                'text-xl',
                 'font-semibold',
                 'shadow',
                 'hover:bg-au-primary-700',
                 'disabled:bg-au-primary-500/50',
                 'disabled:shadow',
-                'ring-au-primary-500/70 ring-offset-2',
-                'focus-visible:ring-2 focus:scale-[0.98]',],
-            secondary: [],
-            tertiary: [],
-            ghostPrimary: [],
-            ghostSecondary: []
+                'ring-au-primary-500/70',
+                'ring-offset-2',
+                'focus-visible:ring-2',
+                'focus:scale-[0.98]'
+            ],
+            secondary: [
+                'bg-au-gray-100',
+                'text-au-dark-900',
+                'font-semibold',
+                'shadow',
+                'hover:bg-au-gray-300',
+                'disabled:bg-au-gray-100/50',
+                'disabled:shadow',
+                'ring-au-gray-100/70',
+                'ring-offset-2',
+                'focus-visible:ring-2',
+                'focus:scale-[0.98]'
+            ],
+            tertiary: [
+                'bg-au-dark-100',
+                'text-au-gray-100',
+                'font-semibold',
+                'shadow',
+                'hover:bg-au-dark-300',
+                'disabled:bg-au-dark-100/50',
+                'disabled:shadow',
+                'ring-au-dark-100/70',
+                'ring-offset-2',
+                'focus-visible:ring-2',
+                'focus:scale-[0.98]'
+            ],
+            ghostPrimary: [
+                'bg-transparent',
+                'text-au-primary-500',
+                'border-au-primary-500',
+                'border-2',
+                'font-semibold',
+                'shadow',
+                'hover:border-au-primary-700',
+                'hover:text-au-primary-700',
+                'disabled:border-au-primary-500/50',
+                'disabled:shadow',
+                'ring-au-primary-500/70',
+                'ring-offset-2',
+                'focus-visible:ring-2',
+                'focus-scale-[0.98]'
+            ],
+            ghostSecondary: [
+                'bg-transparent',
+                'text-au-gray-100',
+                'border-au-gray-100',
+                'border-2',
+                'font-semibold',
+                'shadow',
+                'hover:border-au-gray-500',
+                'hover:text-au-gray-500',
+                'disabled:border-au-gray-500/50',
+                'disabled:shadow',
+                'ring-au-gray-100/70',
+                'ring-offset-2',
+                'focus-visible:ring-2',
+                'focus-scale-[0.98]'
+            ]
         },
         size: {
-            small: [
-
+            sm: [
+                'px-4',
+                'h-8'
             ],
-            medium: [
-
+            md: [
+                'px-5',
+                'h-10',
+                'text-lg'
             ],
-            large: [
-
+            lg: [
+                'px-8',
+                'h-12',
+                'text-xl'
             ]
         },
     },
     defaultVariants: {
         variant: 'primary',
-        size: 'medium'
+        size: 'md'
     }
 })
 
 const Loading = () => (
     <div className="absolute inline-flex items-center">
-        <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit]" />
+        <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit] " />
     </div>
 )
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     VariantProps<typeof variants> & {
-        loading?: boolean
+        loading?: boolean;
+        icon?: React.ReactNode
     };
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, children, loading, ...rest }, ref) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, children, loading, icon, ...rest }, ref) => {
     return (<button ref={ref} className={twMerge(variants({ variant, size, className }))} {...rest} >
         {loading && <Loading />}
-        <span className={clsx('transition', {
-            'opacity-0': loading,
-            'opacity-100': !loading
-        })}>{children}</span>
+        <div className="inline-flex items-center">
+
+            <span className={clsx('transition', {
+                'opacity-0': loading,
+                'opacity-100': !loading
+            })}>
+                {children}
+            </span>
+            {icon && <span className="ml-2">{icon}</span>}
+        </div>
 
     </button>
     )
