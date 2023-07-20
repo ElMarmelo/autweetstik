@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <div className="flex items-start bg-au-dark-900 text-au-gray-100">
         <NavBar />
-        <div className="min-h-screen flex-grow border-x">
+        <div className="min-h-screen flex-grow border-x sm:pr-4">
           <Component {...pageProps} />
         </div>
       </div>
