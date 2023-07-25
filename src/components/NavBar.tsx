@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { RiHome2Fill, RiUserFill } from 'react-icons/ri'
+import { ImInfinite } from 'react-icons/im'
 
 
 export function NavBar() {
@@ -11,9 +12,10 @@ export function NavBar() {
   return (
     <div className="flex flex-col">
       <nav className="sticky top-0 px-2 py-4">
-        <ul className="flex flex-col items-start gap-2 whitespace-nowrap">
+        <h2 className="justify-center text-3xl font-semibold p-5 inline-flex hover:bg-au-gray-100/30 hover:cursor-pointer rounded-full m-2 transition">Autweetstik <ImInfinite className="ml-2" /> </h2>
+        <ul className="flex flex-col items-center gap-4 whitespace-nowrap">
           <li>
-            <Link href={"/"} className={navLinkStyles}> Inicio <RiHome2Fill className=" ml-2" /> </Link>
+            <Link href={"/"} className={navLinkStyles}> Inicio <RiHome2Fill className="ml-2" /> </Link>
           </li>
           {user != null && (
             <li>
@@ -21,17 +23,14 @@ export function NavBar() {
             </li>
           )}
           {user == null ? (
-            <div className="pl-2">
-              <li>
-                <Button onClick={() => void signIn()} variant={"secondary"}>Iniciar Sesión</Button>
-              </li>
-            </div>
+            <li>
+              <Button onClick={() => void signIn()} variant={"secondary"}>Iniciar Sesión</Button>
+            </li>
+
           ) : (
-            <div className="pl-2">
-              <li>
-                <Button onClick={() => void signOut()} variant={"ghostSecondary"}>Cerrar Sesión</Button>
-              </li>
-            </div>
+            <li>
+              <Button onClick={() => void signOut()} variant={"ghostSecondary"}>Cerrar Sesión</Button>
+            </li>
           )}
         </ul>
       </nav>
@@ -40,4 +39,4 @@ export function NavBar() {
 }
 
 
-const navLinkStyles = "flex justify-between text-2xl font-semibold px-5 py-2 hover:bg-au-gray-100/30 rounded-lg"
+const navLinkStyles = "flex justify-between text-2xl font-semibold px-5 py-2 hover:bg-au-gray-100/30 rounded-full transition inline-flex items-center"

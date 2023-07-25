@@ -4,7 +4,7 @@ import React, { forwardRef } from "react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 
-
+//Estilso base y variantes de estilo y tamaño para los botones
 const variants = cva([
     'rounded-full',
     'tracking-wide',
@@ -117,6 +117,7 @@ const variants = cva([
     }
 })
 
+//Elemento loading que se puede renderizar en caso de que se necesite
 const Loading = () => (
     <div className="absolute inline-flex items-center">
         <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit] " />

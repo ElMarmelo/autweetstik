@@ -18,6 +18,8 @@ type InfiniteTweetListProps = {
   tweets?: Tweet[];
 };
 
+
+//Renderizar componente, definir si carga, si hay un error o cualquier otra picha
 export default function InfiniteTweetList({
   tweets,
   isError,
@@ -27,8 +29,8 @@ export default function InfiniteTweetList({
 }: InfiniteTweetListProps) {
   if (isLoading)
     return (
-      <div className="absolute inline-flex items-center">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-au-gray-100 border-b-transparent " />
+      <div className="absolute inline-flex items-center w-full justify-center h-screen">
+        <div className="h-32 w-32 animate-spin rounded-full border-4 border-au-gray-100 border-b-transparent " />
       </div>
     );
 
@@ -42,6 +44,7 @@ export default function InfiniteTweetList({
     );
   }
 
+  //Scroll infinito con la vara y las posibilidades, en caso de que se necesiten más, se hace fetchNewTweets
   return (
     <ul>
       <InfiniteScroll
