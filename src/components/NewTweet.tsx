@@ -43,10 +43,40 @@ function Form() {
     updateTextAreaHeight(textAreaRef.current);
   }, [inputValue]);
 
+  const trpcUtils = api.useContext()
+
   //Hacer un tweet nuevo con una mutación
   const createTweet = api.tweet.create.useMutation({
     onSuccess: (newTweet) => {
       setInputValue("");
+
+      if (session.status !== 'authenticated') return
+
+      trpcUtils.tweet.infiniteFeed.setInfiniteData({}, (oldData) => {
+        if (oldData == null || oldData.pages[0] == null) return
+
+        const newCachedTweet = {
+          ...newTweet,
+          likeCount: 0,
+          likedByMe: false,
+          user: {
+            id: session.data.user.id,
+            name: session.data.user.name,
+            image: session.data.user.image
+          }
+        }
+
+        return {
+          ...oldData,
+          page: [
+            {
+              ...oldData.pages[0],
+              tweets: [newCachedTweet, oldData.pages[0].tweets]
+            },
+            ...oldData.pages.slice(1)
+          ]
+        }
+      })
     },
   });
 
@@ -67,7 +97,7 @@ function Form() {
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="flex-grow resize-none overflow-hidden rounded-md border-2 border-au-dark-700 bg-au-dark-900 p-4 text-lg outline-none"
+            className="flex-grow p-4 overflow-hidden text-lg border-2 rounded-md outline-none resize-none border-au-dark-700 bg-au-dark-900"
             placeholder="Me cago en figueres"
           />
         </div>

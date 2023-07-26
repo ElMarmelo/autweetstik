@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { VscAccount } from "react-icons/vsc";
+import { RiAccountCircleFill } from "react-icons/ri";
 
 type ProfileImageProps = {
     src?: string | null;
@@ -12,7 +12,7 @@ export function ProfileImage({ src, className = "" }: ProfileImageProps) {
             className={`relative h-12 w-12 overflow-hidden rounded-full ${className}`}
         >
             {src == null ? (
-                <VscAccount className="h-full w-full" />
+                <RiAccountCircleFill className="w-full h-full" />
             ) : (
                 <Image src={src} alt="Profile Image" quality={100} fill />
             )}

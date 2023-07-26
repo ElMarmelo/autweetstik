@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <header className="sticky top-0 z-10 border-b">
-        <h1 className="mb-2 px-4 py-2 text-3xl font-bold">Inicio</h1>
+        <h1 className="px-4 py-2 mb-2 text-3xl font-bold">Inicio</h1>
         <NewTweet />
       </header>
       <RecentTweets />
@@ -22,7 +22,7 @@ function RecentTweets() {
 
   return (
     <InfiniteTweetList
-      tweets={tweets.data?.pages.flatMap((page) => page.tweet)}
+      tweets={tweets.data?.pages.flatMap((page) => page.tweets)}
       isError={tweets.isError}
       hasMore={tweets.hasNextPage}
       isLoading={tweets.isLoading}
