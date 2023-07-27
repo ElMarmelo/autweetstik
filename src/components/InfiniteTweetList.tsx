@@ -1,4 +1,4 @@
-import { isError } from "@tanstack/react-query";
+import { Mutation, isError } from "@tanstack/react-query";
 import Link from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { ProfileImage } from "./ProfileImage";
@@ -45,12 +45,12 @@ export default function InfiniteTweetList({
   if (tweets == null || tweets.length === 0) {
     return (
       <h2 className="my-4 text-2xl text-center text-au-gray-100">
-        There&apos;s no tweets right now
+        Ahorita mismo no hay tweets
       </h2>
     );
   }
 
-  //Scroll infinito con la vara y las posibilidades, en caso de que se necesiten más, se hace fetchNewTweets
+  //Scroll infinito con la vara y las posibilidades, en caso de que se necesiten más, se piden más tweets
   return (
     <ul>
       <InfiniteScroll
@@ -67,6 +67,7 @@ export default function InfiniteTweetList({
   );
 }
 
+//Formatear fecha
 const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "short",
 });
@@ -79,6 +80,7 @@ function TweetCard({
   likeCount,
   likedByMe,
 }: Tweet) {
+  //Lógica de los likes, contexto, mutar y en éxito se actualiza el dato del tweet, se agrega un 1, y se actualiza el feed
   const trpcUtils = api.useContext();
   const toggleLike = api.tweet.toggleLike.useMutation({
     onSuccess: ({ addedLike }) => {
@@ -114,6 +116,7 @@ function TweetCard({
   })
 
   function handleToggleLike() {
+    //Mutamos el tweet mediante su ID
     toggleLike.mutate({ id })
   }
   return (

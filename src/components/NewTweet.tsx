@@ -51,7 +51,7 @@ function Form() {
       setInputValue("");
 
       if (session.status !== 'authenticated') return
-
+      //Ver en el API si hay tweets nuevos, en caso de que hayan de refresca la lista de tweets, caso contrario se devuelve el array viejo sin cambios
       trpcUtils.tweet.infiniteFeed.setInfiniteData({}, (oldData) => {
         if (oldData == null || oldData.pages[0] == null) return
 
@@ -65,7 +65,7 @@ function Form() {
             image: session.data.user.image
           }
         }
-
+        //Devolvemos los datos viejos
         return {
           ...oldData,
           page: [
@@ -90,7 +90,7 @@ function Form() {
     <>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 px-4 py-2">
         <div className="flex gap-4">
-          {/* Fallback de imagen, en caso de que no haya hacemos otra vara la cual no recuerdo ahorita */}
+          {/* Fallback de imagen, en caso de que no haya hacemos otra vara la cual no recuerdo ahorita | Ya la recordé, poner un ícono lmao */}
           <ProfileImage src={session.data?.user.image} />
           <textarea
             maxLength={300}

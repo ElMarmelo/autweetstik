@@ -13,9 +13,10 @@ export const tweetRouter = createTRPCRouter({
         limit: z.number().optional(),
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
-      //Get 10 most recent tweets
+      //Recibir los últimos 10 tweets, ajustable supongo
     )
     .query(async ({ input: { limit = 10, cursor }, ctx }) => {
+      //Usamos findmany, El límite + 1, el cursor usa una conjetura del ID y el creado cuando, los ordena mediante fecha y luego ID
       const currentUserId = ctx.session?.user.id;
       const data = ctx.prisma.tweet.findMany({
         take: limit + 1,
@@ -35,7 +36,7 @@ export const tweetRouter = createTRPCRouter({
           },
         },
       });
-
+      //Conseguir información de los tweets y pedir más, mapeando arreglo por cada entrada individual
       let nextCursor: typeof cursor | undefined;
       if ((await data).length > limit) {
         const nextItem = (await data).pop();
@@ -57,6 +58,8 @@ export const tweetRouter = createTRPCRouter({
         nextCursor,
       };
     }),
+  //Crear un tweet, el contenido es un string, mutamos en la base de datos una entrada con ese contenido
+  //Agarra el contenido, el ID del usuario además
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
     .mutation(async ({ input: { content }, ctx }) => {
@@ -66,7 +69,8 @@ export const tweetRouter = createTRPCRouter({
 
       return tweet;
     }),
-
+  //Se muta, agarramos el ID del t weet y el del usuario, existing es para ver si ya está con like
+  //Buscamos un find unique donde haya datos con el userid en el tweetid, si no hay, se crea la data del like, es un valor booleano, la creamos con sí, si no la cambiamos a no
   toggleLike: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input: { id }, ctx }) => {
