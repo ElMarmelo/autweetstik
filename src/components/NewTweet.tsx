@@ -43,17 +43,17 @@ function Form() {
     updateTextAreaHeight(textAreaRef.current);
   }, [inputValue]);
 
-  const trpcUtils = api.useContext()
+  const trpcUtils = api.useContext();
 
   //Hacer un tweet nuevo con una mutación
   const createTweet = api.tweet.create.useMutation({
     onSuccess: (newTweet) => {
       setInputValue("");
 
-      if (session.status !== 'authenticated') return
+      if (session.status !== "authenticated") return;
       //Ver en el API si hay tweets nuevos, en caso de que hayan de refresca la lista de tweets, caso contrario se devuelve el array viejo sin cambios
       trpcUtils.tweet.infiniteFeed.setInfiniteData({}, (oldData) => {
-        if (oldData == null || oldData.pages[0] == null) return
+        if (oldData == null || oldData.pages[0] == null) return;
 
         const newCachedTweet = {
           ...newTweet,
@@ -61,22 +61,22 @@ function Form() {
           likedByMe: false,
           user: {
             id: session.data.user.id,
-            name: session.data.user.name,
-            image: session.data.user.image
-          }
-        }
+            name: session.data.user.name || null,
+            image: session.data.user.image || null,
+          },
+        };
         //Devolvemos los datos viejos
         return {
           ...oldData,
           page: [
             {
               ...oldData.pages[0],
-              tweets: [newCachedTweet, oldData.pages[0].tweets]
+              tweets: [newCachedTweet, oldData.pages[0].tweets],
             },
-            ...oldData.pages.slice(1)
-          ]
-        }
-      })
+            ...oldData.pages.slice(1),
+          ],
+        };
+      });
     },
   });
 
@@ -97,7 +97,7 @@ function Form() {
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="flex-grow p-4 overflow-hidden text-lg border-2 rounded-md outline-none resize-none border-au-dark-700 bg-au-dark-900"
+            className="flex-grow resize-none overflow-hidden rounded-md border-2 border-au-dark-700 bg-au-dark-900 p-4 text-lg outline-none"
             placeholder="Me cago en figueres"
           />
         </div>

@@ -4,60 +4,39 @@ import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
+  createTRPCContext,
 } from "~/server/api/trpc";
+import { Prisma } from "@prisma/client";
+import { inferAsyncReturnType } from "@trpc/server";
 
 export const tweetRouter = createTRPCRouter({
   infiniteFeed: publicProcedure
     .input(
       z.object({
+        onlyFollowing: z.boolean().optional(),
         limit: z.number().optional(),
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
       //Recibir los últimos 10 tweets, ajustable supongo
     )
-    .query(async ({ input: { limit = 10, cursor }, ctx }) => {
-      //Usamos findmany, El límite + 1, el cursor usa una conjetura del ID y el creado cuando, los ordena mediante fecha y luego ID
-      const currentUserId = ctx.session?.user.id;
-      const data = ctx.prisma.tweet.findMany({
-        take: limit + 1,
-        cursor: cursor ? { createdAt_id: cursor } : undefined,
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          _count: { select: { likes: true } },
-          likes:
-            currentUserId == null
-              ? false
-              : { where: { userId: currentUserId } },
-          user: {
-            select: { name: true, id: true, image: true },
-          },
-        },
-      });
-      //Conseguir información de los tweets y pedir más, mapeando arreglo por cada entrada individual
-      let nextCursor: typeof cursor | undefined;
-      if ((await data).length > limit) {
-        const nextItem = (await data).pop();
-        if (nextItem != null) {
-          nextCursor = { id: nextItem.id, createdAt: nextItem.createdAt };
-        }
+    .query(
+      async ({ input: { limit = 10, onlyFollowing = false, cursor }, ctx }) => {
+        const currentUserId = ctx.session?.user?.id;
+        return await getInfiniteTweets({
+          limit,
+          ctx,
+          cursor,
+          whereClause:
+            currentUserId == null || !onlyFollowing
+              ? undefined
+              : {
+                  user: {
+                    followers: { some: { id: currentUserId } },
+                  },
+                },
+        });
       }
-      return {
-        tweets: (await data).map((tweet) => {
-          return {
-            id: tweet.id,
-            content: tweet.content,
-            createdAt: tweet.createdAt,
-            likeCount: tweet._count.likes,
-            user: tweet.user,
-            likedByMe: tweet.likes?.length > 0,
-          };
-        }),
-        nextCursor,
-      };
-    }),
+    ),
   //Crear un tweet, el contenido es un string, mutamos en la base de datos una entrada con ese contenido
   //Agarra el contenido, el ID del usuario además
   create: protectedProcedure
@@ -89,3 +68,56 @@ export const tweetRouter = createTRPCRouter({
       }
     }),
 });
+
+async function getInfiniteTweets({
+  whereClause,
+  ctx,
+  limit,
+  cursor,
+}: {
+  whereClause?: Prisma.TweetWhereInput;
+  limit: number;
+  cursor: { id: string; createdAt: Date } | undefined;
+  ctx: inferAsyncReturnType<typeof createTRPCContext>;
+}) {
+  //Usamos findmany, El límite + 1, el cursor usa una conjetura del ID y el creado cuando, los ordena mediante fecha y luego ID
+  const currentUserId = ctx.session?.user.id;
+  const data = ctx.prisma.tweet.findMany({
+    take: limit + 1,
+    cursor: cursor ? { createdAt_id: cursor } : undefined,
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    where: whereClause,
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      _count: { select: { likes: true } },
+      likes:
+        currentUserId == null ? false : { where: { userId: currentUserId } },
+      user: {
+        select: { name: true, id: true, image: true },
+      },
+    },
+  });
+  //Conseguir información de los tweets y pedir más, mapeando arreglo por cada entrada individual
+  let nextCursor: typeof cursor | undefined;
+  if ((await data).length > limit) {
+    const nextItem = (await data).pop();
+    if (nextItem != null) {
+      nextCursor = { id: nextItem.id, createdAt: nextItem.createdAt };
+    }
+  }
+  return {
+    tweets: (await data).map((tweet) => {
+      return {
+        id: tweet.id,
+        content: tweet.content,
+        createdAt: tweet.createdAt,
+        likeCount: tweet._count.likes,
+        user: tweet.user,
+        likedByMe: tweet.likes?.length > 0,
+      };
+    }),
+    nextCursor,
+  };
+}
