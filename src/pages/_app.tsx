@@ -33,7 +33,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <div className="flex items-start bg-au-dark-900 text-au-gray-100">
         {isMobile ? <MobileNavbar /> : <DesktopNavbar />}
-        <div className="min-h-screen flex-grow border-x sm:pr-4">
+        <div className="min-h-screen flex-grow sm:pr-4 lg:border-x">
           <Component {...pageProps} />
         </div>
       </div>

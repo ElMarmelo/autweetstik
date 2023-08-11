@@ -7,6 +7,7 @@ import { boolean } from "zod";
 import { VscHeart, VscHeartFilled } from "react-icons/vsc";
 import IconHoverEffect from "./IconHoverEffect";
 import { api } from "~/utils/api";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
 type Tweet = {
   id: string;
@@ -33,12 +34,7 @@ export default function InfiniteTweetList({
   fetchNewTweets,
   hasMore = false,
 }: InfiniteTweetListProps) {
-  if (isLoading)
-    return (
-      <div className="absolute inline-flex h-screen w-full items-center justify-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-4 border-au-gray-100 border-b-transparent " />
-      </div>
-    );
+  if (isLoading) return <LoadingSpinner />;
 
   if (isError) return <h1>Error</h1>;
 
@@ -57,7 +53,7 @@ export default function InfiniteTweetList({
         dataLength={tweets.length}
         next={fetchNewTweets}
         hasMore={hasMore}
-        loader={"loading..."}
+        loader={<LoadingSpinner />}
       >
         {tweets.map((tweet) => {
           return <TweetCard key={tweet.id} {...tweet} />;
@@ -112,6 +108,10 @@ function TweetCard({
         };
       };
       trpcUtils.tweet.infiniteFeed.setInfiniteData({}, updateData);
+      trpcUtils.tweet.infiniteProfileFeed.setInfiniteData(
+        { userId: user.id },
+        updateData
+      );
     },
   });
 

@@ -101,13 +101,15 @@ function Form() {
             placeholder="Me cago en figueres"
           />
         </div>
-        <p className="ml-auto font-semibold text-au-gray-100">
-          Carácteres restantes: {300 - inputValue.length}
-        </p>
-        <div className="flex justify-end p-5">
-          <Button size={"lg"} icon={<RiQuillPenFill />}>
-            Autistear
-          </Button>
+        <div className="flex flex-row py-2">
+          <p className="ml-auto self-start font-semibold text-au-gray-100">
+            Carácteres restantes: {300 - inputValue.length}
+          </p>
+          <div className="flex justify-end self-end px-5">
+            <Button size={"lg"} icon={<RiQuillPenFill />}>
+              Autistear
+            </Button>
+          </div>
         </div>
       </form>
     </>
