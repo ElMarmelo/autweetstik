@@ -7,7 +7,7 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
-
+  images: { domains: ["cdn.discordapp.com"] },
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
    * out.
@@ -15,8 +15,8 @@ const config = {
    * @see https://github.com/vercel/next.js/issues/41980
    */
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: ["es"],
+    defaultLocale: "es",
   },
 };
 
